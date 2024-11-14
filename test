@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+
+const navigation = [
+  { name: '홈', href: '/' },
+  { name: '회사소개', href: '/about' },
+  { name: '서비스', href: '/services' },
+  { name: '상담예약', href: '/reservation' },
+  { name: '성공사례', href: '/success' }
+];
+
+const steps = [
+  { title: "채무조정 상담이 처음이신가요?", options: ["예", "아니오"], type: "radio" },
+  { title: "나이를 선택해주세요", options: ["20대", "30대", "40대", "50대 이상"], type: "radio" },
+  // ... other steps
+];
+
+const DiagnosisModal = ({ isOpen, onClose }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState({});
+  
+  const handleNext = () => {
+    if (currentStep === steps.length - 1) {
+      handleSubmit();
+    } else {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    setCurrentStep(prev => prev - 1);
+  };
+
+  return isOpen ? (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-xl">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">{steps[currentStep].title}</h2>
+          <button onClick={onClose}
+            className="text-gray-500 hover:text-gray-700">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        
+        {/* Step Content */}
+        <div className="space-y-4">
+          {steps[currentStep].options?.map((option, idx) => (
+            <label key={idx} className="flex items-center p-3 border rounded-lg hover:bg-blue-50">
+              <input
+                type={steps[currentStep].type}
+                name={`step-${currentStep}`}
+                value={option}
+                className="mr-3"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between mt-6">
+          {currentStep > 0 && (
+            <button onClick={handlePrev}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+              이전
+            </button>
+          )}
+          <button onClick={handleNext}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            {currentStep === steps.length - 1 ? '제출' : '다음'}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+};
+
+export default function LawOffice() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full bg-black bg-opacity-80 backdrop-blur z-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <div className="hidden md:block">
+                <div className="flex items-baseline space-x-4">
+                  {navigation.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="px-3 py-2 text-white hover:text-blue-400"
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="md:hidden">
+              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                <Menu className="h-6 w-6 text-white" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="relative h-screen">
+        <video
+          autoPlay
+          muted
+          loop
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="play2.mp4" type="video/mp4" />
+        </video>
+        <div className="relative z-10 h-full bg-black bg-opacity-40 flex items-center justify-center text-center">
+          <div className="space-y-8">
+            <h1 className="text-4xl md:text-6xl font-bold">
+              새로운 시작을 위한 첫걸음
+            </h1>
+            <p className="text-xl md:text-2xl">
+              전문적인 법률 상담으로 당신의 미래를 지원합니다.
+            </p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              간편 무료 진단
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal */}
+      <DiagnosisModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 w-full bg-black bg-opacity-90 text-center py-2">
+        <p className="text-sm">© 2024 법률사무소. 모든 권리 보유.</p>
+      </footer>
+    </div>
+  );
+}
